@@ -1,47 +1,46 @@
 /**
- * The Montreal traffic cone — orange body, two reflective white bands, flared
- * base. Used as the brand mark, the landing image, and (in string form via
- * lib/coneMarker) the map markers. Gradient ids are fixed; duplicate identical
- * defs across instances resolve to the same paint, so this stays hook-free and
- * safe to render in Server Components.
+ * The brand mark: an orange reflective traffic drum (channelizer barrel) —
+ * orange body, two white reflective bands, domed lid, dark rubber base.
+ * Used as the logo, favicon (see app/icon.svg) and landing image; the map
+ * markers mirror it via lib/coneMarker. Gradient ids are fixed; duplicate
+ * identical defs resolve to the same paint, so this stays hook-free and safe
+ * in Server Components.
+ *
+ * (Component/file name kept as ConeIcon to avoid churn across imports + CSS.)
  */
 export function ConeIcon({ className = "" }: { className?: string }) {
   return (
     <svg viewBox="0 0 64 64" className={className} aria-hidden="true">
       <defs>
-        <linearGradient id="fmhConeBody" x1="0" y1="0" x2="1" y2="0">
+        <linearGradient id="fmhDrumBody" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0" stopColor="#ff9a52" />
-          <stop offset="0.45" stopColor="#ff6a1f" />
+          <stop offset="0.5" stopColor="#ff6a1f" />
           <stop offset="1" stopColor="#df4d0e" />
-        </linearGradient>
-        <linearGradient id="fmhConeBase" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0" stopColor="#ff8a3d" />
-          <stop offset="1" stopColor="#d8480c" />
         </linearGradient>
       </defs>
 
       {/* ground shadow */}
-      <ellipse cx="32" cy="57" rx="22" ry="3.2" fill="#000" opacity="0.18" />
-      {/* flared base */}
+      <ellipse cx="32" cy="57" rx="21" ry="3" fill="#000" opacity="0.18" />
+      {/* dark rubber base */}
       <path
-        d="M15 51 Q15 49 17 49 L47 49 Q49 49 49 51 L51.5 55.5 Q52 57 50 57 L14 57 Q12 57 12.5 55.5 Z"
-        fill="url(#fmhConeBase)"
-        stroke="#c8450c"
-        strokeWidth="0.5"
+        d="M15 50 Q12 50 12 53 L12 55 Q12 58 15 58 L49 58 Q52 58 52 55 L52 53 Q52 50 49 50 Z"
+        fill="#23232a"
       />
-      {/* cone body */}
+      {/* drum body */}
       <path
-        d="M32 7 L46 50 Q32 54 18 50 Z"
-        fill="url(#fmhConeBody)"
+        d="M19 17 C19 14 21 13 24 13 L40 13 C43 13 45 14 45 17 L45 51 L19 51 Z"
+        fill="url(#fmhDrumBody)"
         stroke="#c8450c"
         strokeWidth="0.6"
-        strokeLinejoin="round"
       />
+      {/* domed lid + handle slot */}
+      <ellipse cx="32" cy="13.5" rx="13" ry="3.2" fill="#ff8f47" stroke="#c8450c" strokeWidth="0.5" />
+      <ellipse cx="32" cy="13" rx="4" ry="1.3" fill="#c2470d" opacity="0.5" />
       {/* reflective bands */}
-      <path d="M22.4 37 L41.6 37 L43.7 44 L20.3 44 Z" fill="#fff" />
-      <path d="M27 24 L37 24 L37.8 29 L26.2 29 Z" fill="#fff" />
+      <rect x="19" y="20" width="26" height="6" fill="#fff" />
+      <rect x="19" y="33" width="26" height="6" fill="#fff" />
       {/* left highlight */}
-      <path d="M31 9 L24 46 L27.5 46 Z" fill="#fff" opacity="0.16" />
+      <rect x="19.5" y="17" width="5" height="34" fill="#fff" opacity="0.12" />
     </svg>
   );
 }
