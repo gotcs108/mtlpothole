@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="620" viewBox="0 0 520 620">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2a2a32"/>
+      <stop offset="1" stop-color="#16161b"/>
+    </linearGradient>
+    <linearGradient id="cone" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff7a26"/>
+      <stop offset="1" stop-color="#d8530a"/>
+    </linearGradient>
+  </defs>
+  <rect width="520" height="620" fill="url(#bg)"/>
+  <!-- hazard strip top -->
+  <g>
+    <rect width="520" height="26" fill="#14141a"/>
+    <g fill="#ffc400">
+      <polygon points="0,0 40,0 0,26"/>
+      <polygon points="80,0 120,0 40,26 0,26"/>
+      <polygon points="160,0 200,0 120,26 80,26"/>
+      <polygon points="240,0 280,0 200,26 160,26"/>
+      <polygon points="320,0 360,0 280,26 240,26"/>
+      <polygon points="400,0 440,0 360,26 320,26"/>
+      <polygon points="480,0 520,0 440,26 400,26"/>
+    </g>
+  </g>
+  <!-- silhouette -->
+  <g fill="#0f0f13">
+    <circle cx="260" cy="250" r="62"/>
+    <path d="M150 470 q0-130 110-150 q110 20 110 150 q-110 40 -220 0 Z"/>
+  </g>
+  <!-- cone he holds -->
+  <g transform="translate(330 360)">
+    <rect x="-26" y="78" width="52" height="10" rx="5" fill="url(#cone)"/>
+    <path d="M0 8 L18 80 H-18 Z" fill="url(#cone)"/>
+    <path d="M-7 44 H7 L9 52 H-9 Z" fill="#fff"/>
+    <path d="M-11 60 H11 L13 70 H-13 Z" fill="#fff"/>
+  </g>
+  <!-- caption -->
+  <g>
+    <rect x="0" y="540" width="520" height="80" fill="#ff6a13"/>
+    <text x="28" y="576" font-family="Arial Narrow, Arial, sans-serif" font-weight="bold" font-size="30" fill="#14141a">@marquize.7</text>
+    <text x="28" y="602" font-family="Arial, sans-serif" font-size="15" fill="#3a1d05">Drop the real photo at /public/marquize.jpg</text>
+  </g>
+</svg>

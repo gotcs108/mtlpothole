@@ -1,26 +1,137 @@
 @import "tailwindcss";
+@import "leaflet/dist/leaflet.css";
+
+/* ---- mtlpothole theme (light) ---- */
+@theme {
+  --color-cone: #ff5a1f;
+  --color-cone-dark: #e44a12;
+  --color-ink: #16161a;
+  --color-muted: #6b6b76;
+  --color-line: #e7e5e0;
+  --color-wash: #f5f4f1;
+  --color-stop: #d7263d;
+
+  --font-display: var(--font-anton), "Arial Narrow", sans-serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+}
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #16161a;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.display {
+  font-family: var(--font-display);
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+}
+
+/* ---- Leaflet, light ---- */
+.leaflet-container {
+  background: #eceae5;
+  font-family: var(--font-body);
+  z-index: 0;
+}
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.8) !important;
+  color: #8a8780 !important;
+}
+.leaflet-control-attribution a {
+  color: #5b5b66 !important;
+}
+.leaflet-bar a {
+  background: #fff !important;
+  color: #16161a !important;
+  border-color: #e7e5e0 !important;
+}
+.leaflet-bar a:hover {
+  background: var(--color-cone) !important;
+  color: #fff !important;
+}
+
+/* cone marker */
+.cone-marker {
+  background: transparent;
+  border: none;
+  display: grid;
+  place-items: center;
+  transition: transform 0.12s ease;
+  cursor: pointer;
+}
+.cone-marker:hover {
+  transform: translateY(-3px) scale(1.08);
+  z-index: 1000;
+}
+.cone-marker .cone-pin {
+  line-height: 0;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.28));
+}
+.cone-marker .cone-votes {
+  margin-top: -8px;
+  font-family: var(--font-body);
+  font-weight: 800;
+  font-size: 11px;
+  color: #fff;
+  background: var(--color-cone);
+  border: 2px solid #fff;
+  border-radius: 999px;
+  padding: 0 6px;
+  min-width: 20px;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+}
+.cone-marker.is-filled .cone-votes {
+  background: #16a34a;
+}
+
+/* popup + tooltip, light */
+.leaflet-popup-content-wrapper {
+  background: #fff;
+  color: #16161a;
+  border-radius: 14px;
+  border: 1px solid #e7e5e0;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+.leaflet-popup-content {
+  margin: 0;
+  width: 248px !important;
+}
+.leaflet-popup-tip {
+  background: #fff;
+  border: 1px solid #e7e5e0;
+}
+.leaflet-popup-close-button {
+  color: #9a978f !important;
+  padding: 8px 8px 0 0 !important;
+}
+.cone-tooltip {
+  background: #fff !important;
+  color: #16161a !important;
+  border: 1px solid var(--color-cone) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18) !important;
+  padding: 0 !important;
+  overflow: hidden;
+}
+.cone-tooltip::before {
+  display: none !important;
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.animate-pop-in {
+  animation: pop-in 0.18s ease-out;
 }

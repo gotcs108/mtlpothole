@@ -1,36 +1,99 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🚧 mtl**pothole** · mtlpothole.com
 
-## Getting Started
+Montreal's community pothole map. Report a pothole, vote up the worst ones, and
+watch them get filled. Light/minimal theme. Inspired by the legend
+[@marquize.7](https://www.instagram.com/marquize.7/).
 
-First, run the development server:
+## Run it
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# open http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+`npm run build` produces a clean production build (deployable to Vercel as-is).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Pages
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **`/` — landing.** Minimal: centered "Where's the hole?" headline, one line of
+  copy, and a search bar. Search/Report route to `/map`.
+- **`/map` — the hole map.** Leaflet + OpenStreetMap (CARTO light tiles, no API key).
+  Orange Montreal **traffic-cone** markers with vote badges; **hover** for a quick
+  card, **click** to vote + comment. Filled holes turn into a green cone. The report
+  flow (search an address *or* drop/drag a pin → photo + description → submit) lives here.
+  Landing search hands a target to the map via `sessionStorage`; `/map#report` deep-links
+  straight into the report modal.
+- **`/leaderboard` — the board.** "Most Requested Holes" ranked by votes; tap a row to
+  jump to it on the map. Donate ("Fuel the fill") + phase-2 teaser live at the bottom.
 
-## Learn More
+A shared `SiteNav` + `SiteFooter` wrap every page.
 
-To learn more about Next.js, take a look at the following resources:
+## How the data works
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This is a **local demo**: data is seeded (`lib/seed.ts`) and persisted to the
+browser's `localStorage`. Nothing is shared between visitors yet. One vote per
+hole per browser; the reporter auto-votes their own.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Everything goes through one interface — `lib/store/PotholeStore.ts`:
 
-## Deploy on Vercel
+```ts
+interface PotholeStore {
+  list(): Promise<Pothole[]>;
+  add(input: NewPotholeInput): Promise<Pothole>;
+  vote(id: string, voted: boolean): Promise<Pothole>;
+  addComment(id: string, text: string): Promise<Comment>;
+}
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The demo implementation is `lib/store/localStore.ts`. **To make it a real shared
+community**, add `lib/store/supabaseStore.ts` implementing the same interface
+(a `potholes` table + `comments`, Supabase Storage for photos) and swap the one
+line in `lib/store/useStore.ts`:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```ts
+const store = useMemo(() => new LocalPotholeStore(), []);
+// → new SupabaseStore()
+```
+
+No component changes required.
+
+## Project map
+
+```
+app/
+  layout.tsx        fonts (Anton + Inter), metadata, theme
+  page.tsx          / — landing (clean CTA)
+  map/page.tsx      /map — the interactive map + report flow
+  leaderboard/page.tsx  /leaderboard — the board + donate/phase-2
+  globals.css       Tailwind v4 theme tokens + Leaflet/marker restyling
+components/
+  SiteNav, SiteFooter, Hero, SearchBar, PotholeMap, PotholeCard,
+  LocationPicker, ReportModal, RankedList, DonateButton, ConeIcon
+lib/
+  types.ts          Pothole / Comment / JournalEntry (phase-2 fields scaffolded)
+  seed.ts           ~9 Montreal potholes
+  geocode.ts        Nominatim address <-> coords
+  image.ts          client-side photo downscale -> data URL
+  format.ts         time-ago, compact numbers, status metadata
+  placeholder.ts    offline-safe SVG pothole "photos"
+  coneMarker.ts     the orange MTL traffic-cone marker SVG
+  store/            PotholeStore interface + LocalPotholeStore + useStore hook
+public/
+  marquize.svg      placeholder portrait — drop the real photo at /public/marquize.jpg
+                    and point Hero.tsx's <img src> at it
+```
+
+## Customize
+
+- **The legend's photo:** replace `public/marquize.svg` reference in `components/Hero.tsx`
+  with `/marquize.jpg` after adding that file.
+- **Theme colors:** the `@theme` block at the top of `app/globals.css`
+  (cone orange accent on a white/light palette: `ink`, `muted`, `line`, `wash`).
+
+## Phase 2 (scaffolded, not wired)
+
+- Filled-hole before/after photos + Marquize's progress journal on hover
+  (fields already on the `Pothole` type: `fillPhotoUrl`, `journal`).
+- Real donations.
+- Notifications when a hole you voted for gets filled.
