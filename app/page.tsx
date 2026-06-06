@@ -48,6 +48,7 @@ export default function Landing() {
       {/* center stage */}
       <section className="flex flex-1 items-center justify-center px-6">
         <div className="w-full max-w-xl text-center">
+          <ConeIcon className="mx-auto mb-6 h-20 w-20 drop-shadow-sm sm:h-24 sm:w-24" />
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-muted">
             Montreal pothole map
           </p>
