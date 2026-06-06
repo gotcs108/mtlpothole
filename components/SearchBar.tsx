@@ -5,19 +5,15 @@ import { geocodeAddress, GeoResult } from "@/lib/geocode";
 
 interface Props {
   onLocate: (result: GeoResult) => void;
-  onReport: () => void;
 }
 
-export function SearchBar({ onLocate, onReport }: Props) {
+export function SearchBar({ onLocate }: Props) {
   const [q, setQ] = useState("");
   const [busy, setBusy] = useState(false);
   const [miss, setMiss] = useState(false);
 
   async function go() {
-    if (!q.trim()) {
-      onReport();
-      return;
-    }
+    if (!q.trim()) return;
     setBusy(true);
     setMiss(false);
     const hit = await geocodeAddress(q);
@@ -28,32 +24,19 @@ export function SearchBar({ onLocate, onReport }: Props) {
 
   return (
     <div className="w-full">
-      <div className="flex flex-col gap-2 rounded-2xl border border-line bg-white p-2 shadow-sm sm:flex-row">
-        <div className="flex flex-1 items-center gap-2 px-2">
-          <span className="text-lg text-muted">🔎</span>
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && go()}
-            placeholder="Search an address, hit Enter…"
-            className="w-full bg-transparent py-2 text-base text-ink outline-none placeholder:text-muted/60"
-          />
-        </div>
-        <button
-          onClick={onReport}
-          className="whitespace-nowrap rounded-xl bg-cone px-5 py-2.5 text-sm font-extrabold uppercase tracking-wide text-white transition hover:bg-cone-dark"
-        >
-          🚧 Report a hole
-        </button>
+      <div className="flex items-center gap-2 rounded-xl border border-white/60 bg-white/50 px-3 py-2">
+        <span className="text-base text-muted">🔎</span>
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          onKeyDown={(e) => e.key === "Enter" && go()}
+          placeholder="Cherche une adresse…"
+          className="w-full bg-transparent text-sm text-ink outline-none placeholder:text-muted/70"
+        />
       </div>
-      {busy && (
-        <p className="mt-2 pl-2 text-xs text-muted">Searching the map…</p>
-      )}
+      {busy && <p className="mt-1.5 pl-1 text-xs text-muted">Recherche…</p>}
       {miss && (
-        <p className="mt-2 pl-2 text-xs text-stop">
-          Couldn&apos;t find that — hit &quot;Report a hole&quot; and drop a pin
-          yourself.
-        </p>
+        <p className="mt-1.5 pl-1 text-xs text-stop">Adresse introuvable.</p>
       )}
     </div>
   );

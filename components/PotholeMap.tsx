@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import L from "leaflet";
-import { MapContainer, Marker, Popup, TileLayer, Tooltip, useMap } from "react-leaflet";
+import { MapContainer, Marker, Popup, TileLayer, Tooltip, useMap, ZoomControl } from "react-leaflet";
 import { Pothole } from "@/lib/types";
 import { STATUS_META } from "@/lib/format";
 import { coneMarkerSvg } from "@/lib/coneMarker";
@@ -19,6 +19,7 @@ interface Props {
   potholes: Pothole[];
   hasVoted: (id: string) => boolean;
   onVote: (id: string) => void;
+  onToggleFilled: (id: string) => void;
   onComment: (id: string, text: string) => void;
   focus: MapFocus | null;
 }
@@ -64,6 +65,7 @@ export default function PotholeMap({
   potholes,
   hasVoted,
   onVote,
+  onToggleFilled,
   onComment,
   focus,
 }: Props) {
@@ -74,8 +76,10 @@ export default function PotholeMap({
       center={MTL_CENTER}
       zoom={12}
       scrollWheelZoom
+      zoomControl={false}
       className="h-full w-full"
     >
+      <ZoomControl position="topright" />
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
         url="https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png"
@@ -112,7 +116,7 @@ export default function PotholeMap({
                   ▲ {p.votes} votes · {STATUS_META[p.status].label}
                 </p>
                 <p className="mt-0.5 text-[9px] italic text-muted">
-                  click for details & to vote
+                  clique pour voter & commenter
                 </p>
               </div>
             </div>
@@ -122,6 +126,7 @@ export default function PotholeMap({
               pothole={p}
               hasVoted={hasVoted(p.id)}
               onVote={onVote}
+              onToggleFilled={onToggleFilled}
               onComment={onComment}
             />
           </Popup>

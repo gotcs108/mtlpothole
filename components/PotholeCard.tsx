@@ -8,10 +8,17 @@ interface Props {
   pothole: Pothole;
   hasVoted: boolean;
   onVote: (id: string) => void;
+  onToggleFilled: (id: string) => void;
   onComment: (id: string, text: string) => void;
 }
 
-export function PotholeCard({ pothole, hasVoted, onVote, onComment }: Props) {
+export function PotholeCard({
+  pothole,
+  hasVoted,
+  onVote,
+  onToggleFilled,
+  onComment,
+}: Props) {
   const [showComments, setShowComments] = useState(false);
   const [draft, setDraft] = useState("");
   const status = STATUS_META[pothole.status];
@@ -49,26 +56,38 @@ export function PotholeCard({ pothole, hasVoted, onVote, onComment }: Props) {
           </p>
         )}
 
-        <div className="mt-3 flex items-center gap-2">
+        <div className="mt-3 space-y-1.5">
+          {/* primary upvote */}
           <button
             onClick={() => onVote(pothole.id)}
             disabled={isFilled}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-extrabold uppercase tracking-wide transition
+            className={`flex w-full items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-extrabold uppercase tracking-wide transition
               ${
                 isFilled
-                  ? "cursor-default bg-emerald-100 text-emerald-700"
+                  ? "cursor-default bg-wash text-muted"
                   : hasVoted
                     ? "bg-cone text-white"
                     : "bg-wash text-ink hover:bg-cone hover:text-white"
               }`}
           >
-            <span className="text-base leading-none">
-              {isFilled ? "✓" : "▲"}
-            </span>
+            <span className="text-base leading-none">▲</span>
             <span>{pothole.votes}</span>
             <span className="font-semibold normal-case opacity-80">
-              {isFilled ? "filled" : hasVoted ? "voted" : "fill this"}
+              {hasVoted ? "voté" : "vote"}
             </span>
+          </button>
+
+          {/* small filled vote — green, outline only */}
+          <button
+            onClick={() => onToggleFilled(pothole.id)}
+            className={`flex w-full items-center justify-center gap-1 rounded-lg border px-3 py-1 text-[11px] font-bold uppercase tracking-wide transition
+              ${
+                isFilled
+                  ? "border-emerald-500 bg-transparent text-emerald-600"
+                  : "border-emerald-500/60 bg-transparent text-emerald-600 hover:bg-emerald-50"
+              }`}
+          >
+            ✓ {isFilled ? "Bouché" : "Marquer bouché"}
           </button>
         </div>
 
@@ -77,7 +96,7 @@ export function PotholeCard({ pothole, hasVoted, onVote, onComment }: Props) {
           className="mt-2 text-[11px] font-semibold text-muted hover:text-cone"
         >
           💬 {pothole.comments.length}{" "}
-          {pothole.comments.length === 1 ? "comment" : "comments"} ·{" "}
+          {pothole.comments.length === 1 ? "commentaire" : "commentaires"} ·{" "}
           {timeAgo(pothole.createdAt)}
         </button>
 
@@ -86,7 +105,7 @@ export function PotholeCard({ pothole, hasVoted, onVote, onComment }: Props) {
             <div className="max-h-28 space-y-1.5 overflow-y-auto pr-1">
               {pothole.comments.length === 0 && (
                 <p className="text-[11px] italic text-muted/70">
-                  No comments yet — be the first.
+                  Aucun commentaire — sois le premier.
                 </p>
               )}
               {pothole.comments.map((c) => (
@@ -104,14 +123,14 @@ export function PotholeCard({ pothole, hasVoted, onVote, onComment }: Props) {
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && submitComment()}
-                placeholder="Add a comment…"
+                placeholder="Ajoute un commentaire…"
                 className="min-w-0 flex-1 rounded-md border border-line bg-white px-2 py-1 text-[11px] text-ink outline-none placeholder:text-muted/60 focus:border-cone"
               />
               <button
                 onClick={submitComment}
                 className="rounded-md bg-cone px-2 py-1 text-[11px] font-bold text-white hover:bg-cone-dark"
               >
-                Post
+                Go
               </button>
             </div>
           </div>

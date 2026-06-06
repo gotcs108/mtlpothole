@@ -17,13 +17,13 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://mtlpothole.com"),
-  title: "mtlpothole — where's the hole?",
+  title: "On répare MTL — la carte des nids-de-poule de Montréal",
   description:
-    "Montreal's community pothole map. Report a pothole, vote up the worst ones, and watch them get filled.",
+    "Signale un nid-de-poule, vote pour les pires, suis les réparations. Le mouvement de Marquize — la carte communautaire des trous de Montréal.",
   openGraph: {
-    title: "mtlpothole — where's the hole?",
+    title: "On répare MTL — la carte des nids-de-poule de Montréal",
     description:
-      "Report a pothole, vote on the worst, watch them get filled. Montreal's community pothole map.",
+      "Signale un trou, vote pour les pires, suis les réparations. Le mouvement de Marquize.",
     type: "website",
     url: "https://mtlpothole.com",
   },

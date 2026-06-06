@@ -11,7 +11,7 @@ const LocationPicker = dynamic(() => import("./LocationPicker"), {
   ssr: false,
   loading: () => (
     <div className="grid h-full w-full place-items-center bg-wash text-sm text-muted">
-      Loading map…
+      Chargement de la carte…
     </div>
   ),
 });
@@ -50,7 +50,7 @@ export function ReportModal({ open, onClose, onSubmit }: Props) {
     const hit = await geocodeAddress(search);
     setSearching(false);
     if (!hit) {
-      setError("Couldn't find that address. Try dropping a pin on the map instead.");
+      setError("Adresse introuvable. Place un pin sur la carte à la place.");
       return;
     }
     setCoords({ lat: hit.lat, lng: hit.lng });
@@ -69,13 +69,13 @@ export function ReportModal({ open, onClose, onSubmit }: Props) {
     try {
       setPhotoUrl(await fileToDownscaledDataUrl(file));
     } catch {
-      setError("Couldn't read that image.");
+      setError("Impossible de lire cette image.");
     }
   }
 
   async function handleSubmit() {
     if (!coords) {
-      setError("Pin the hole on the map (or search an address) first.");
+      setError("Place le trou sur la carte (ou cherche une adresse) en premier.");
       return;
     }
     setSubmitting(true);
@@ -90,7 +90,7 @@ export function ReportModal({ open, onClose, onSubmit }: Props) {
       reset();
       onClose();
     } catch {
-      setError("Something went wrong saving the report.");
+      setError("Erreur en enregistrant le signalement.");
     } finally {
       setSubmitting(false);
     }
@@ -106,7 +106,7 @@ export function ReportModal({ open, onClose, onSubmit }: Props) {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between border-b border-line px-5 py-4">
-          <h2 className="display text-2xl text-ink">Report a hole</h2>
+          <h2 className="display text-2xl text-ink">Signaler un trou</h2>
           <button
             onClick={onClose}
             className="rounded-full px-2 text-2xl leading-none text-muted hover:text-ink"
@@ -120,7 +120,7 @@ export function ReportModal({ open, onClose, onSubmit }: Props) {
           {/* Address search */}
           <div>
             <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-muted">
-              Search address
+              Chercher une adresse
             </label>
             <div className="flex gap-2">
               <input
@@ -135,7 +135,7 @@ export function ReportModal({ open, onClose, onSubmit }: Props) {
                 disabled={searching}
                 className="rounded-lg bg-cone px-4 py-2 text-sm font-bold text-white hover:bg-cone-dark disabled:opacity-60"
               >
-                {searching ? "…" : "Find"}
+                {searching ? "…" : "Chercher"}
               </button>
             </div>
           </div>
@@ -143,7 +143,7 @@ export function ReportModal({ open, onClose, onSubmit }: Props) {
           {/* Pin map */}
           <div>
             <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-muted">
-              …or tap the map to drop a pin
+              …ou place un pin sur la carte
             </label>
             <div className="h-52 overflow-hidden rounded-xl border border-line">
               <LocationPicker value={coords} onPick={handlePick} />
@@ -162,7 +162,7 @@ export function ReportModal({ open, onClose, onSubmit }: Props) {
               ) : (
                 <>
                   <span className="text-xl">📷</span>
-                  <span>Add photo</span>
+                  <span>Photo</span>
                 </>
               )}
               <input type="file" accept="image/*" className="hidden" onChange={handlePhoto} />
@@ -170,7 +170,7 @@ export function ReportModal({ open, onClose, onSubmit }: Props) {
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe the hole. How bad is it? What did it do to your ride?"
+              placeholder="Décris le trou. C'est-tu pire ? Qu'est-ce qu'il a fait à ton char ?"
               rows={3}
               className="resize-none rounded-xl border border-line bg-white px-3 py-2 text-sm text-ink outline-none placeholder:text-muted/60 focus:border-cone"
             />
@@ -183,7 +183,7 @@ export function ReportModal({ open, onClose, onSubmit }: Props) {
             disabled={submitting}
             className="w-full rounded-xl bg-cone py-3 text-base font-extrabold uppercase tracking-wide text-white transition hover:bg-cone-dark disabled:opacity-60"
           >
-            {submitting ? "Dropping the cone…" : "🚧 Submit the hole"}
+            {submitting ? "On place le cône…" : "🚧 Envoyer le trou"}
           </button>
         </div>
       </div>

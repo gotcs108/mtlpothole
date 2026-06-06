@@ -76,6 +76,19 @@ export class LocalPotholeStore implements PotholeStore {
     return updated;
   }
 
+  async toggleFilled(id: string): Promise<Pothole> {
+    const potholes = read();
+    let updated: Pothole | undefined;
+    const next = potholes.map((p) => {
+      if (p.id !== id) return p;
+      updated = { ...p, status: p.status === "filled" ? "reported" : "filled" };
+      return updated;
+    });
+    if (!updated) throw new Error(`Pothole ${id} not found`);
+    write(next);
+    return updated;
+  }
+
   async addComment(id: string, text: string): Promise<Comment> {
     const potholes = read();
     const comment: Comment = {

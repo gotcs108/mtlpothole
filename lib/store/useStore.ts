@@ -32,6 +32,7 @@ export interface StoreApi {
   hasVoted: (id: string) => boolean;
   addPothole: (input: NewPotholeInput) => Promise<Pothole>;
   toggleVote: (id: string) => Promise<void>;
+  toggleFilled: (id: string) => Promise<void>;
   addComment: (id: string, text: string) => Promise<void>;
 }
 
@@ -105,6 +106,22 @@ export function usePotholeStore(): StoreApi {
     [store, voted]
   );
 
+  const toggleFilled = useCallback(
+    async (id: string) => {
+      const flip = (p: Pothole): Pothole =>
+        p.id === id
+          ? { ...p, status: p.status === "filled" ? "reported" : "filled" }
+          : p;
+      setPotholes((prev) => prev.map(flip));
+      try {
+        await store.toggleFilled(id);
+      } catch {
+        setPotholes((prev) => prev.map(flip)); // toggling twice reverts
+      }
+    },
+    [store]
+  );
+
   const addComment = useCallback(
     async (id: string, text: string) => {
       const comment = await store.addComment(id, text);
@@ -117,5 +134,13 @@ export function usePotholeStore(): StoreApi {
     [store]
   );
 
-  return { potholes, ready, hasVoted, addPothole, toggleVote, addComment };
+  return {
+    potholes,
+    ready,
+    hasVoted,
+    addPothole,
+    toggleVote,
+    toggleFilled,
+    addComment,
+  };
 }
