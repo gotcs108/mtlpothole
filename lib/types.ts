@@ -1,4 +1,4 @@
-export type PotholeStatus = "reported" | "in_progress" | "filled";
+export type PotholeStatus = "reported" | "in_progress";
 
 export interface Comment {
   id: string;
@@ -23,6 +23,8 @@ export interface Pothole {
   photoUrl: string;
   votes: number;
   status: PotholeStatus;
+  /** Community "it's fixed" votes — a hole reads as done past a threshold. */
+  filledVotes: number;
   createdAt: string; // ISO
   comments: Comment[];
 

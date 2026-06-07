@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { NewPotholeInput } from "@/lib/types";
 import { geocodeAddress, reverseGeocode } from "@/lib/geocode";
@@ -20,9 +20,13 @@ interface Props {
   open: boolean;
   onClose: () => void;
   onSubmit: (input: NewPotholeInput) => Promise<unknown>;
+  /** Pre-pinned location, e.g. from clicking the map. */
+  initialLocation?: { lat: number; lng: number } | null;
+  /** Carried over from the search bar — prefilled + geocoded on open. */
+  initialSearch?: string;
 }
 
-export function ReportModal({ open, onClose, onSubmit }: Props) {
+export function ReportModal({ open, onClose, onSubmit, initialLocation, initialSearch }: Props) {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [address, setAddress] = useState("");
   const [search, setSearch] = useState("");
@@ -31,6 +35,28 @@ export function ReportModal({ open, onClose, onSubmit }: Props) {
   const [searching, setSearching] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  // Prefill the pin when opened from a map click.
+  useEffect(() => {
+    if (!open || !initialLocation) return;
+    setCoords(initialLocation);
+    setAddress("");
+    reverseGeocode(initialLocation.lat, initialLocation.lng).then((l) => {
+      if (l) setAddress(l);
+    });
+  }, [open, initialLocation]);
+
+  // Carry over the search-bar text: prefill + geocode it to a pin.
+  useEffect(() => {
+    if (!open || initialLocation || !initialSearch?.trim()) return;
+    setSearch(initialSearch);
+    geocodeAddress(initialSearch).then((hit) => {
+      if (hit) {
+        setCoords({ lat: hit.lat, lng: hit.lng });
+        setAddress(hit.label);
+      }
+    });
+  }, [open, initialSearch, initialLocation]);
 
   if (!open) return null;
 

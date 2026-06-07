@@ -6,21 +6,22 @@ import { LocalPotholeStore } from "./localStore";
 import { PotholeStore } from "./PotholeStore";
 
 const VOTED_KEY = "fmh:voted:v1";
+const FILLED_KEY = "fmh:filledvoted:v1";
 
-function readVoted(): Set<string> {
+function readSet(key: string): Set<string> {
   if (typeof window === "undefined") return new Set();
   try {
-    const raw = window.localStorage.getItem(VOTED_KEY);
+    const raw = window.localStorage.getItem(key);
     return new Set(raw ? (JSON.parse(raw) as string[]) : []);
   } catch {
     return new Set();
   }
 }
 
-function writeVoted(ids: Set<string>): void {
+function writeSet(key: string, ids: Set<string>): void {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(VOTED_KEY, JSON.stringify([...ids]));
+    window.localStorage.setItem(key, JSON.stringify([...ids]));
   } catch {
     /* ignore */
   }
@@ -30,9 +31,10 @@ export interface StoreApi {
   potholes: Pothole[];
   ready: boolean;
   hasVoted: (id: string) => boolean;
+  hasMarkedFilled: (id: string) => boolean;
   addPothole: (input: NewPotholeInput) => Promise<Pothole>;
   toggleVote: (id: string) => Promise<void>;
-  toggleFilled: (id: string) => Promise<void>;
+  voteFilled: (id: string) => Promise<void>;
   addComment: (id: string, text: string) => Promise<void>;
 }
 
@@ -40,6 +42,7 @@ export function usePotholeStore(): StoreApi {
   const store: PotholeStore = useMemo(() => new LocalPotholeStore(), []);
   const [potholes, setPotholes] = useState<Pothole[]>([]);
   const [voted, setVoted] = useState<Set<string>>(new Set());
+  const [filledVoted, setFilledVoted] = useState<Set<string>>(new Set());
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -47,7 +50,8 @@ export function usePotholeStore(): StoreApi {
     store.list().then((list) => {
       if (!active) return;
       setPotholes(list);
-      setVoted(readVoted());
+      setVoted(readSet(VOTED_KEY));
+      setFilledVoted(readSet(FILLED_KEY));
       setReady(true);
     });
     return () => {
@@ -56,6 +60,10 @@ export function usePotholeStore(): StoreApi {
   }, [store]);
 
   const hasVoted = useCallback((id: string) => voted.has(id), [voted]);
+  const hasMarkedFilled = useCallback(
+    (id: string) => filledVoted.has(id),
+    [filledVoted]
+  );
 
   const addPothole = useCallback(
     async (input: NewPotholeInput) => {
@@ -64,7 +72,7 @@ export function usePotholeStore(): StoreApi {
       // The reporter auto-votes their own hole.
       setVoted((prev) => {
         const next = new Set(prev).add(created.id);
-        writeVoted(next);
+        writeSet(VOTED_KEY, next);
         return next;
       });
       return created;
@@ -87,7 +95,7 @@ export function usePotholeStore(): StoreApi {
         const next = new Set(prev);
         if (willVote) next.add(id);
         else next.delete(id);
-        writeVoted(next);
+        writeSet(VOTED_KEY, next);
         return next;
       });
       try {
@@ -106,20 +114,42 @@ export function usePotholeStore(): StoreApi {
     [store, voted]
   );
 
-  const toggleFilled = useCallback(
+  const voteFilled = useCallback(
     async (id: string) => {
-      const flip = (p: Pothole): Pothole =>
-        p.id === id
-          ? { ...p, status: p.status === "filled" ? "reported" : "filled" }
-          : p;
-      setPotholes((prev) => prev.map(flip));
+      const willVote = !filledVoted.has(id);
+      setPotholes((prev) =>
+        prev.map((p) =>
+          p.id === id
+            ? {
+                ...p,
+                filledVotes: Math.max(0, p.filledVotes + (willVote ? 1 : -1)),
+              }
+            : p
+        )
+      );
+      setFilledVoted((prev) => {
+        const next = new Set(prev);
+        if (willVote) next.add(id);
+        else next.delete(id);
+        writeSet(FILLED_KEY, next);
+        return next;
+      });
       try {
-        await store.toggleFilled(id);
+        await store.voteFilled(id, willVote);
       } catch {
-        setPotholes((prev) => prev.map(flip)); // toggling twice reverts
+        setPotholes((prev) =>
+          prev.map((p) =>
+            p.id === id
+              ? {
+                  ...p,
+                  filledVotes: Math.max(0, p.filledVotes + (willVote ? -1 : 1)),
+                }
+              : p
+          )
+        );
       }
     },
-    [store]
+    [store, filledVoted]
   );
 
   const addComment = useCallback(
@@ -138,9 +168,10 @@ export function usePotholeStore(): StoreApi {
     potholes,
     ready,
     hasVoted,
+    hasMarkedFilled,
     addPothole,
     toggleVote,
-    toggleFilled,
+    voteFilled,
     addComment,
   };
 }

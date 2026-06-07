@@ -43,6 +43,34 @@ export async function geocodeAddress(query: string): Promise<GeoResult | null> {
   }
 }
 
+/** Up to `limit` Montreal-biased suggestions for an autocomplete dropdown. */
+export async function geocodeSuggest(
+  query: string,
+  limit = 5
+): Promise<GeoResult[]> {
+  const q = query.trim();
+  if (q.length < 3) return [];
+  const url =
+    `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=${limit}` +
+    `&viewbox=${MTL_VIEWBOX}&bounded=1&q=${encodeURIComponent(q + ", Montreal, QC")}`;
+  try {
+    const res = await fetch(url, { headers: { "Accept-Language": "en,fr" } });
+    if (!res.ok) return [];
+    const data = (await res.json()) as Array<{
+      lat: string;
+      lon: string;
+      display_name: string;
+    }>;
+    return data.map((h) => ({
+      lat: parseFloat(h.lat),
+      lng: parseFloat(h.lon),
+      label: h.display_name,
+    }));
+  } catch {
+    return [];
+  }
+}
+
 export async function reverseGeocode(
   lat: number,
   lng: number

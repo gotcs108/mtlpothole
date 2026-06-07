@@ -135,3 +135,25 @@ body {
 .animate-pop-in {
   animation: pop-in 0.18s ease-out;
 }
+
+/* pending "add here" pin pulse */
+@keyframes pending-pulse {
+  0% { transform: scale(0.6); opacity: 0.6; }
+  70% { transform: scale(2.6); opacity: 0; }
+  100% { opacity: 0; }
+}
+.pending-wrap {
+  position: relative;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.pending-wrap .pending-ring {
+  position: absolute;
+  bottom: 3px;
+  height: 16px;
+  width: 16px;
+  border-radius: 9999px;
+  background: rgba(255, 90, 31, 0.55);
+  animation: pending-pulse 1.4s ease-out infinite;
+}

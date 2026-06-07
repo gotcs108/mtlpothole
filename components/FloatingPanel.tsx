@@ -94,7 +94,7 @@ export function FloatingPanel({ peek, children }: Props) {
             }
           : undefined
       }
-      className="fixed inset-x-0 bottom-0 z-[500] flex max-h-[85vh] flex-col overflow-hidden rounded-t-2xl border border-white/60 bg-white/55 shadow-[0_-8px_40px_rgba(0,0,0,0.14)] ring-1 ring-white/40 backdrop-blur-2xl backdrop-saturate-150 sm:inset-x-auto sm:bottom-28 sm:left-8 sm:top-6 sm:max-h-none sm:w-[372px] sm:rounded-2xl sm:shadow-2xl"
+      className="fixed inset-x-0 bottom-0 z-[500] flex max-h-[85vh] flex-col overflow-hidden rounded-t-3xl border border-white/60 bg-gradient-to-b from-white/55 to-white/25 shadow-[0_8px_40px_rgba(0,0,0,0.18)] ring-1 ring-white/40 backdrop-blur-2xl backdrop-saturate-200 sm:inset-x-auto sm:bottom-8 sm:left-10 sm:top-8 sm:max-h-none sm:w-[360px] sm:rounded-3xl sm:shadow-2xl"
     >
       {/* drag handle (mobile only) */}
       <div

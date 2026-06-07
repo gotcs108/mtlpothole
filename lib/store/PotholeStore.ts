@@ -10,7 +10,7 @@ export interface PotholeStore {
   add(input: NewPotholeInput): Promise<Pothole>;
   /** Toggle a vote. Returns the updated pothole. `voted` reflects new state. */
   vote(id: string, voted: boolean): Promise<Pothole>;
-  /** Community signal: flip a hole between reported and filled. */
-  toggleFilled(id: string): Promise<Pothole>;
+  /** Community "it's fixed" vote. `voted` reflects the new state. */
+  voteFilled(id: string, voted: boolean): Promise<Pothole>;
   addComment(id: string, text: string): Promise<Comment>;
 }

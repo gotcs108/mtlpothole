@@ -1,9 +1,9 @@
 import { Comment, NewPotholeInput, Pothole } from "../types";
 import { SEED_POTHOLES } from "../seed";
-import { potholePlaceholder } from "../placeholder";
+import { potholePhoto } from "../photos";
 import { PotholeStore } from "./PotholeStore";
 
-const KEY = "fmh:potholes:v1";
+const KEY = "fmh:potholes:v3";
 
 function uid(prefix: string): string {
   if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
@@ -53,9 +53,10 @@ export class LocalPotholeStore implements PotholeStore {
       lng: input.lng,
       address: input.address.trim() || "Unknown location, Montreal",
       description: input.description.trim(),
-      photoUrl: input.photoUrl || potholePlaceholder(id),
+      photoUrl: input.photoUrl || potholePhoto(potholes.length),
       votes: 1, // reporter implicitly votes for their own hole
       status: "reported",
+      filledVotes: 0,
       createdAt: new Date().toISOString(),
       comments: [],
     };
@@ -76,12 +77,15 @@ export class LocalPotholeStore implements PotholeStore {
     return updated;
   }
 
-  async toggleFilled(id: string): Promise<Pothole> {
+  async voteFilled(id: string, voted: boolean): Promise<Pothole> {
     const potholes = read();
     let updated: Pothole | undefined;
     const next = potholes.map((p) => {
       if (p.id !== id) return p;
-      updated = { ...p, status: p.status === "filled" ? "reported" : "filled" };
+      updated = {
+        ...p,
+        filledVotes: Math.max(0, p.filledVotes + (voted ? 1 : -1)),
+      };
       return updated;
     });
     if (!updated) throw new Error(`Pothole ${id} not found`);

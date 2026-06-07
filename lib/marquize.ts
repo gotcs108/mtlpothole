@@ -11,12 +11,14 @@ export const MARQUIZE = {
   sloganFr: "On répare Montréal, un nid-de-poule à la fois",
   movementFr: "Rejoins le mouvement",
 
+  // Verified from his IG bio (read via logged-in session).
+  businessEmail: "marquize.7@outlook.com",
+
   links: {
     instagram: "https://www.instagram.com/marquize.7/",
     tiktok: "https://www.tiktok.com/@marquize.7",
     company: "https://marquizepaysagement.com/",
-    // TODO: swap for the exact GoFundMe URL; bio link lives on his IG for now.
-    donate: "https://www.instagram.com/marquize.7/",
+    donate: "https://www.gofundme.com/f/on-repare-montreal-rejoins-le-mouvement",
   },
 
   company: {
@@ -25,12 +27,13 @@ export const MARQUIZE = {
     phone: "514-701-2739",
   },
 
-  // Last-known public figures (spring 2026). Editable placeholders.
+  // Followers/posts VERIFIED live from IG; raised/donors from spring-2026 press.
   stats: {
     holesFilled: 100, // his public claim ~"the whole city"; shown as 100+
-    raisedCad: 36300,
-    donors: 850,
-    followers: 46000, // Instagram
+    raisedCad: 40882, // GoFundMe (live read); goal 45k
+    donors: 1031,
+    followers: 75700, // IG (live read — grown from ~46K in early press)
+    posts: 53,
     views: 1_000_000, // original video, IG+TikTok
   },
 
